@@ -6,9 +6,11 @@ export class ProductDetails extends React.Component {
         this.state = {
             product: null,
             loading: true,
-            addedToCart: false
+            addedToCart: false,
+            inputValue: 0
         };
 
+        this.updateInputValue = this.updateInputValue.bind(this);
         fetch('api/products/' + this.props.productId, { method: 'get' })
             .then(response => response.json())
             .then(data => {
@@ -26,6 +28,7 @@ export class ProductDetails extends React.Component {
     }
 
     handleAddToCart(product) {
+        
         fetch("api/shoppingCart/",
             {
                 method: "post",
@@ -35,6 +38,12 @@ export class ProductDetails extends React.Component {
             .then(data => {
                 this.setState({ addedToCart: true });
             })
+    }
+
+    updateInputValue(event) {
+        this.setState({
+            inputValue: event.target.value
+        });
     }
 
     renderDetails(product) {
@@ -49,10 +58,14 @@ export class ProductDetails extends React.Component {
                 <div>{product.price}</div>
                 <label>Quantity</label>
                 <div>{product.quantity}</div>
-                <br/>
+                <br />
+
+                <div>
+                    <input id='CartQuantity' name='CartQuantity' type="number" defaultValue="0" onChange={evt => this.updateInputValue}/>
                 <button className="action" onClick={() => this.handleAddToCart(product)}>Add To Cart</button>
                 <br/>
-                {this.state.addedToCart == true ? <p> Item On Cart </p>   : null}
+                    {this.state.addedToCart == true ? <div><br /><p> Item On Cart </p> </div> : null}
+                </div>
             </div>);
     }
 }

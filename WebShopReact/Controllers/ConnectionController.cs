@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
+using WebShopReact.Models;
 
 namespace WebShop.Controllers
 {
@@ -12,9 +13,7 @@ namespace WebShop.Controllers
     [ApiController]
     public class ConnectionController : Controller
     {
-        // GET: api/connection/getCurrent
-        [HttpGet("/[action]")]
-        public IActionResult GetCurrent()
+        private string GetCurrent()
         {
             var current = HttpContext.Session.GetString("connection");
             if (current == null)
@@ -22,30 +21,34 @@ namespace WebShop.Controllers
                 current = ConnectionTypes.SqlServer.ToString();
                 HttpContext.Session.SetString("connection", current);
             }
-            return Ok(current);
+            return current;
         }
 
         //GET: api/connection
         [HttpGet]
         public IEnumerable Index()
-        {
+        {            
             var connections = (ConnectionTypes[])Enum.GetValues(typeof(ConnectionTypes));
             var connections_strings = new List<String>();
             foreach (var con in connections)
             {
                 connections_strings.Add(con.ToString());
             }
-            return connections_strings;
+            var response = new Dictionary<String, List<String>>
+            {
+                { "current" , new List<String>{GetCurrent()} },
+                { "connection", connections_strings}
+
+            };
+            return response;
 
         }
 
         [HttpPost]
-        public IActionResult SwitchConnection(ConnectionTypes connection)
+        public IActionResult SwitchConnection([FromBody] InputConnection input)
         {
-            HttpContext.Session.SetString("connection", connection.ToString());
-            ViewData["current"] = connection.ToString();
-            ViewData["success"] = true;
-            return View();
+            HttpContext.Session.SetString("connection", input.Connection.ToString());
+            return Ok();
         }
     }
 }

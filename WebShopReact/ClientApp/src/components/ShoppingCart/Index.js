@@ -27,9 +27,9 @@ export class ShoppingCart extends Component {
             .then(data => {
                 this.setState({
                     shoppingCart: this.state.shoppingCart.filter((rec) => {
-                        return rec.shoppingCartId !== id;
+                        return rec.productId !== id;
                     })
-
+                
                 })
             })
     }
