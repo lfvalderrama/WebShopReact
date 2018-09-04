@@ -17,6 +17,7 @@ export class ProductDetails extends React.Component {
                 this.setState({ product: data, loading: false })
             })
     }
+
     render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
@@ -28,16 +29,18 @@ export class ProductDetails extends React.Component {
     }
 
     handleAddToCart(product) {
-        
-        fetch("api/shoppingCart/",
-            {
-                method: "post",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(product)
-            })
-            .then(data => {
-                this.setState({ addedToCart: true });
-            })
+        if (this.state.inputValue > 0) {
+            product.quantity = this.state.inputValue;
+            fetch("api/shoppingCart/",
+                {
+                    method: "post",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(product)
+                })
+                .then(data => {
+                    this.setState({ addedToCart: true });
+                })
+        }
     }
 
     updateInputValue(event) {
@@ -47,7 +50,6 @@ export class ProductDetails extends React.Component {
     }
 
     renderDetails(product) {
-        console.log("renderDetails: " + product);
         return (
             <div className="details">
                 <label>Name</label>
@@ -61,7 +63,7 @@ export class ProductDetails extends React.Component {
                 <br />
 
                 <div>
-                    <input id='CartQuantity' name='CartQuantity' type="number" defaultValue="0" onChange={evt => this.updateInputValue}/>
+                    <input id='CartQuantity' name='CartQuantity' type="number" defaultValue="0" onChange={this.updateInputValue}/>
                 <button className="action" onClick={() => this.handleAddToCart(product)}>Add To Cart</button>
                 <br/>
                     {this.state.addedToCart == true ? <div><br /><p> Item On Cart </p> </div> : null}

@@ -51,12 +51,16 @@ export class ProductCreateEdit extends Component {
                 : null}
             <label>Name</label>
             <input id='Name' name='Name' type="text" defaultValue={item.name != null ? (item.name + '') : ''} />
+            <br/>
             <label>Description</label>
             <input id='Description' name='Description' type="text" defaultValue={item.description != null ? (item.description + '') : ''} />
+            <br />
             <label>Price</label>
             <input id='Price' name='Price' type="number" defaultValue={item.price != null ? (item.price + '') : ''} />
+            <br />
             <label>Stock</label>
             <input id='Quantity' name='Quantity' type="number" defaultValue={item.quantity != null ? (item.quantity + '') : ''} />
+            <br />
             <button onClick={this.handleSave.bind(this)}>submit</button>
         </form>
     }
