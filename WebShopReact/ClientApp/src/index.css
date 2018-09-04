@@ -1,6 +1,31 @@
+/* Popup */
+div.ReactModal__Content {
+    left: 25% !important;
+}
+
+@media only screen and (max-width:837px) {
+    /*popup*/
+    div.ReactModal__Content {
+        top: 60px !important;
+        left: 4% !important;
+        right: 4% !important;
+        bottom: 4% !important;
+    }
+}
+
 @media (max-width: 767px) {
     /* On small screens, the nav menu spans the full width of the screen. Leave a space for it. */
     body {
         padding-top: 50px;
     }
+}
+
+img.List {
+    height: 20px;
+    width: 20px;
+}
+
+img.Details {
+    height: 300px;
+    width: 300px;
 }
