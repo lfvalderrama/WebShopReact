@@ -7,6 +7,7 @@ import { Counter } from './components/Counter';
 import { Products } from './components/Products/Index';
 import { ShoppingCart } from './components/ShoppingCart/Index';
 import { SwitchDatabase } from './components/SwitchDatabase/SwitchDatabase';
+import { customer } from './components/User/Details';
 
 export default class App extends Component {
   displayName = App.name
@@ -17,6 +18,7 @@ export default class App extends Component {
             <Route exact path='/' component={Products} />
             <Route exact path='/ShoppingCart' component={ShoppingCart} />
             <Route exact path='/SwitchDatabase' component={SwitchDatabase} />
+            <Route exact path='/User' component={customer} />
       </Layout>
     );
   }

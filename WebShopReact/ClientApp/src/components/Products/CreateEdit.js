@@ -49,16 +49,16 @@ export class ProductCreateEdit extends Component {
         return <form id='frmCreateEdit'>
             {this.props.dbaction == 'edit' ? <input id='productId' name='productId' type='hidden' value={item.productId} />
                 : null}
-            <label>Name</label>
+            <label>Name</label><br/>
             <input id='Name' name='Name' type="text" defaultValue={item.name != null ? (item.name + '') : ''} />
             <br/>
-            <label>Description</label>
+            <label>Description</label><br />
             <input id='Description' name='Description' type="text" defaultValue={item.description != null ? (item.description + '') : ''} />
             <br />
-            <label>Price</label>
+            <label>Price</label><br />
             <input id='Price' name='Price' type="number" defaultValue={item.price != null ? (item.price + '') : ''} />
             <br />
-            <label>Stock</label>
+            <label>Stock</label><br />
             <input id='Quantity' name='Quantity' type="number" defaultValue={item.quantity != null ? (item.quantity + '') : ''} />
             <br />
             <button onClick={this.handleSave.bind(this)}>submit</button>

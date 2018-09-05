@@ -5,6 +5,8 @@ using WebShop.Models;
 
 namespace WebShop.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class CustomersController : Controller
     {
         private readonly CustomerManager _customerManager;
@@ -15,6 +17,7 @@ namespace WebShop.Controllers
         }
 
         // GET: Customers/Details/5
+        [HttpGet("{id}")]
         public IActionResult Details(int? id)
         {
             var customer = _customerManager.GetCustomer((int)id);
@@ -22,50 +25,34 @@ namespace WebShop.Controllers
             {
                 return NotFound();
             }
-            return View(customer);
-        }
-
-        // GET: Customers/Create
-        public IActionResult Create()
-        {
-            return View();
+            return Ok(customer);
         }
 
         // POST: Customers/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("CustomerId,FirstName,LastName,Email,Age,ShoppingCartId")] Customer customer)
+        public IActionResult Create([FromBody][Bind("CustomerId,FirstName,LastName,Email,Age,ShoppingCartId")] Customer customer)
         {
             if (ModelState.IsValid)
             {
                 _customerManager.AddCustomer(customer);
-                return RedirectToAction("Details", new { id = customer.CustomerId });
+                return CreatedAtAction("Details", new { id = customer.CustomerId });
             }
-            return View(customer);
+            return BadRequest(ModelState);
         }
-
-        // GET: Customers/Edit/5
-        public IActionResult Edit(int? id)
-        {
-            var customer = _customerManager.GetCustomer((int)id);
-            return View(customer);
-        }
-
         // POST: Customers/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPut("{id}")]
         public IActionResult Edit(int id, [Bind("CustomerId,FirstName,LastName,Email,Age,ShoppingCartId")] Customer customer)
         {
+            if (id != customer.CustomerId)
+            {
+                return NotFound();
+            }
             if (ModelState.IsValid)
             {
                 _customerManager.UpdateCustomer(customer);
-                return RedirectToAction("Details", new { id = customer.CustomerId});
+                return Ok();
             }
-            return View(customer);
+            return BadRequest(ModelState);
         }     
     }
 }
