@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebShop.Models;
+using WebShopReact.Models;
 using WebShop.Managers;
 using System.Collections.Generic;
 

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace WebShop.Models
+namespace WebShopReact.Models
 {
     public partial class WebShopContext : DbContext
     {
@@ -23,6 +23,14 @@ namespace WebShop.Models
         public virtual DbSet<ProductProductCategory> ProductProductCategory { get; set; }
         public virtual DbSet<ShoppingCartProducts> ShoppingCartProducts { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=.\\sqlexpress;Database=WebShop;Trusted_Connection=True;");
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -51,6 +59,14 @@ namespace WebShop.Models
                     .HasColumnName("last_Name")
                     .HasMaxLength(50)
                     .IsUnicode(false);
+
+                entity.Property(e => e.PasswordHash)
+                    .HasColumnName("password_hash")
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.PasswordSalt)
+                    .HasColumnName("password_salt")
+                    .HasMaxLength(100);
             });
 
             modelBuilder.Entity<Order>(entity =>

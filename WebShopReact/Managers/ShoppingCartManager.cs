@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using WebShop.Models;
+using WebShopReact.Models;
 
 namespace WebShop.Managers
 {

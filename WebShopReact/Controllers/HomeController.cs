@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebShop.Models;
+using WebShopReact.Models;
 
 namespace WebShop.Controllers
 {

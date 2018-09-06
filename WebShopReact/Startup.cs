@@ -1,5 +1,6 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +11,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using WebShop.Managers;
-using WebShop.Models;
+using WebShopReact.Models;
+using WebShopReact.Mapper;
+using WebShopReact.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace WebShopReact
 {
@@ -38,24 +45,54 @@ namespace WebShopReact
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
+            services.AddCors();
             services.AddHttpContextAccessor();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddMvc().AddControllersAsServices();
             services.AddMvc();
-            services.AddDistributedMemoryCache();
-            services.AddSession();
+            services.AddAutoMapper();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/build";
             });
+            
+            var key = Encoding.ASCII.GetBytes((string)(Configuration.GetValue(typeof(string), "TokenKey")));
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = context =>
+                    {
+                        var customerManager = context.HttpContext.RequestServices.GetRequiredService<CustomerManager>();
+                        var custoemrId = int.Parse(context.Principal.Identity.Name);
+                        var user = customerManager.GetCustomer(custoemrId);
+                        if (user == null)
+                        {
+                            // return unauthorized if user no longer exists
+                            context.Fail("Unauthorized");
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
 
             var builder = new ContainerBuilder();
             var factory = new DBContextFactory(Configuration);
@@ -65,6 +102,7 @@ namespace WebShopReact
             builder.RegisterType<CustomerManager>();
             builder.RegisterType<ProductManager>();
             builder.RegisterType<ContextHelper>().As<IContextHelper>();
+            builder.RegisterType<TokenHelper>().As<ITokenHelper>();
             builder.Populate(services);
             var container = builder.Build();
             return container.Resolve<IServiceProvider>();
@@ -83,11 +121,16 @@ namespace WebShopReact
                 app.UseHsts();
             }
 
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-            app.UseCookiePolicy();
-            app.UseSession();
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {

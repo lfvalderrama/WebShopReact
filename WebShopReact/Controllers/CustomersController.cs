@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebShop.Managers;
-using WebShop.Models;
+using WebShopReact.Models;
 
 namespace WebShop.Controllers
 {
@@ -16,8 +17,19 @@ namespace WebShop.Controllers
             _customerManager = customerManager;
         }
 
+        // POST: Customers/authenticate
+        [AllowAnonymous]
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate([FromBody]CustomerDTO customer)
+        {
+            var response = _customerManager.Authenticate(customer);
+            if (response == null) return BadRequest("Email or password is incorrect");
+            return Ok(response);
+        }
+
         // GET: Customers/Details/5
         [HttpGet("{id}")]
+        [Authorize]
         public IActionResult Details(int? id)
         {
             var customer = _customerManager.GetCustomer((int)id);
@@ -30,7 +42,7 @@ namespace WebShop.Controllers
 
         // POST: Customers/Create
         [HttpPost]
-        public IActionResult Create([FromBody][Bind("CustomerId,FirstName,LastName,Email,Age,ShoppingCartId")] Customer customer)
+        public IActionResult Create([FromBody][Bind("CustomerId,FirstName,LastName,Email,Age,ShoppingCartId")] CustomerDTO customer)
         {
             if (ModelState.IsValid)
             {
