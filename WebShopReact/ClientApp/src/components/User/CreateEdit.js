@@ -8,7 +8,12 @@ export class CustomerCreateEdit extends Component {
                 customer: null,
                 loading: true,
             }
-            fetch('api/customers/' + this.props.customerId, { method: 'get' })
+            fetch('api/customers/' + this.props.customerId, {
+                method: 'get',
+                headers: new Headers({
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwIiwiRGF0YWJhc2UiOiJTcWxTZXJ2ZXIiLCJuYmYiOjE1MzYyNzIyOTYsImV4cCI6MTUzNjg3NzA5NiwiaWF0IjoxNTM2MjcyMjk2fQ.dKOhl93FsnB1YNbvHd3-M3IAPKOEu0Yz0YR-JmN12a8'
+                })
+            })
                 .then(response => response.json())
                 .then(data => {
                     this.setState({ customer: data, loading: false })
@@ -26,11 +31,12 @@ export class CustomerCreateEdit extends Component {
         fetch(url,
             {
                 method: meth,
-                headers: { 'Content-Type': 'application/json' },
+                headers: new Headers({
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwIiwiRGF0YWJhc2UiOiJTcWxTZXJ2ZXIiLCJuYmYiOjE1MzYyNzIyOTYsImV4cCI6MTUzNjg3NzA5NiwiaWF0IjoxNTM2MjcyMjk2fQ.dKOhl93FsnB1YNbvHd3-M3IAPKOEu0Yz0YR-JmN12a8',
+                    'Content-Type': 'application/json' }),
                 body: JSON.stringify(this.formToJson(form))
             })
             .then(data => {
-                console.log("asdasd");
                 this.props.onSave(true);
             })
     }    
@@ -45,9 +51,22 @@ export class CustomerCreateEdit extends Component {
         </div>)
     }
 
+
+    renderPassword(){
+        return (<div>
+            <label>Password</label> <br />
+            <input id='Password' name='Password' type="password" defaultValue='' />
+            < br /> <br />
+            </div>
+           )
+    }
+
     renderForm(item) {
-        if (this.props.dbaction != "edit")
+        let content = null;
+        if (this.props.dbaction != "edit") {
             item = { FirstName: '', LastName: '', Email: 0, Age: 0 }
+            content = this.renderPassword();
+        }
         return <form id='frmCreateEdit'>
             {this.props.dbaction == 'edit' ? <input id='customerId' name='customerId' type='hidden' value={item.customerId} />
                 : null}
@@ -63,7 +82,8 @@ export class CustomerCreateEdit extends Component {
             <label>Age</label><br />
             <input id='Age' name='Age' type="number" defaultValue={item.age != null ? (item.age + '') : ''} />
             <br /> <br />
-            <button onClick={this.handleSave.bind(this)}>submit</button>
+            {content}
+            <button onClick={this.handleSave.bind(this)}>submit</button>            
         </form>
     }
 

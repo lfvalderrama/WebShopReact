@@ -8,6 +8,7 @@ import { Products } from './components/Products/Index';
 import { ShoppingCart } from './components/ShoppingCart/Index';
 import { SwitchDatabase } from './components/SwitchDatabase/SwitchDatabase';
 import { customer } from './components/User/Details';
+import { Login } from './components/Login/Login';
 
 export default class App extends Component {
   displayName = App.name
@@ -19,6 +20,7 @@ export default class App extends Component {
             <Route exact path='/ShoppingCart' component={ShoppingCart} />
             <Route exact path='/SwitchDatabase' component={SwitchDatabase} />
             <Route exact path='/User' component={customer} />
+            <Route exact path='/Login' component={Login} />
       </Layout>
     );
   }

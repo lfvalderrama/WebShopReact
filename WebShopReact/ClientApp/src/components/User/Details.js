@@ -10,7 +10,7 @@ export class customer extends React.Component {
         this.state = {
             customer: null,
             loading: true,
-            customerId: 1,
+            customerId: 10,
             customerLoaded: false,
             showCreate: false,
             showUpdate: false,
@@ -19,13 +19,18 @@ export class customer extends React.Component {
         };
         this.closeModal = this.closeModal.bind(this);
 
-        fetch('api/customers/' + this.state.customerId, { method: 'get' })
+        fetch('api/customers/' + this.state.customerId, { method: 'get',
+            headers: new Headers({
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwIiwiRGF0YWJhc2UiOiJTcWxTZXJ2ZXIiLCJuYmYiOjE1MzYyNzIyOTYsImV4cCI6MTUzNjg3NzA5NiwiaWF0IjoxNTM2MjcyMjk2fQ.dKOhl93FsnB1YNbvHd3-M3IAPKOEu0Yz0YR-JmN12a8'
+            })
+            })
             .then(response => response.json())
             .then(data => {
                 this.setState({
                     customer: data,
                     loading: false,
-                    customerLoaded: true
+                    customerLoaded: true,
+                    activeId: data.customerId
                 })
             })
             .catch(error => {  
@@ -67,7 +72,11 @@ export class customer extends React.Component {
 
     handlePopupSave(success) {
         if (success) {
-            fetch('api/customers/' + this.state.customerId, { method: 'get' })
+            fetch('api/customers/' + this.state.customerId, {
+                method: 'get',
+                headers: new Headers({
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwIiwiRGF0YWJhc2UiOiJTcWxTZXJ2ZXIiLCJuYmYiOjE1MzYyNzIyOTYsImV4cCI6MTUzNjg3NzA5NiwiaWF0IjoxNTM2MjcyMjk2fQ.dKOhl93FsnB1YNbvHd3-M3IAPKOEu0Yz0YR-JmN12a8'
+                })})
                 .then(response => response.json())
                 .then(data => {
                     this.setState({

@@ -28,6 +28,11 @@ export class NavMenu extends Component {
                 <Glyphicon glyph='shopping-cart' /> Shopping Cart
               </NavItem>
             </LinkContainer>
+                    <LinkContainer to={'/login'}>
+                        <NavItem>
+                            <Glyphicon glyph='user' /> Login
+              </NavItem>
+                    </LinkContainer>
             <LinkContainer to={'/user'}>
               <NavItem>
                 <Glyphicon glyph='user' /> User

@@ -7,7 +7,8 @@ export class ProductDetails extends React.Component {
             product: null,
             loading: true,
             addedToCart: false,
-            inputValue: 0
+            inputValue: 0,
+            addedToCartUnautorized: false
         };
 
         this.updateInputValue = this.updateInputValue.bind(this);
@@ -35,15 +36,25 @@ export class ProductDetails extends React.Component {
             fetch("api/shoppingCart/",
                 {
                     method: "post",
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: new Headers({
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwIiwiRGF0YWJhc2UiOiJTcWxTZXJ2ZXIiLCJuYmYiOjE1MzYyNzIyOTYsImV4cCI6MTUzNjg3NzA5NiwiaWF0IjoxNTM2MjcyMjk2fQ.dKOhl93FsnB1YNbvHd3-M3IAPKOEu0Yz0YR-JmN12a8',
+                        'Content-Type': 'application/json' }),
                     body: JSON.stringify(product)
                 })
                 .then(data => {
-                    product.quantity = oldQuantity;
-                    this.setState({
-                        addedToCart: true,
-                        product: product
-                    });
+                    if (data.status != 401) {
+                        product.quantity = oldQuantity;
+                        this.setState({
+                            addedToCart: true,
+                            product: product,
+                            addedToCartUnautorized: false
+                        });
+                    }
+                    else {
+                        this.setState({
+                            addedToCartUnautorized: true
+                        })
+                    }
                 })
         }
     }
@@ -75,6 +86,7 @@ export class ProductDetails extends React.Component {
                 <button className="action" onClick={() => this.handleAddToCart(product)}>Add To Cart</button>
                 <br/>
                     {this.state.addedToCart == true ? <div><br /><p> Item Added to Cart </p> </div> : null}
+                    {this.state.addedToCartUnautorized == true ? <div><br /><p> Please login to add items to your shopping cart </p> </div> : null}
                 </div>
             </div>);
     }

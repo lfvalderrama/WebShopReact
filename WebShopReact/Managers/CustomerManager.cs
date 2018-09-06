@@ -10,7 +10,7 @@ using System.Text;
 using WebShopReact.Helpers;
 using WebShopReact.Models;
 
-namespace WebShop.Managers
+namespace WebShopReact.Managers
 {
     public class CustomerManager
     {
@@ -27,7 +27,7 @@ namespace WebShop.Managers
             _tokenHelper = tokenHelepr;
         }
 
-        public object Authenticate(CustomerDTO customerIn)
+        public object Authenticate(LoginInput customerIn)
         {
             var email = customerIn.Email;
             var password = customerIn.Password;
@@ -42,9 +42,9 @@ namespace WebShop.Managers
             if (!VerifyPasswordHash(password, customer.PasswordHash, customer.PasswordSalt))
                 return null;
 
-            var token = _tokenHelper.GetToken(customer);
+            var token = _tokenHelper.GetToken(customer.CustomerId, ConnectionTypes.SqlServer);
             
-            return new { token = token};
+            return new { token = token, customerId = customer.CustomerId};
         }        
 
         public Customer GetCustomer(int id)
@@ -53,7 +53,7 @@ namespace WebShop.Managers
             return customer;
         }
 
-        public void AddCustomer(CustomerDTO customerIn)
+        public bool AddCustomer(CustomerDTO customerIn)
         {
             var customer = _mapper.Map<Customer>(customerIn);
             byte[] passwordHash, passwordSalt;
@@ -61,25 +61,37 @@ namespace WebShop.Managers
 
             customer.PasswordHash = passwordHash;
             customer.PasswordSalt = passwordSalt;
+
+            if (_context.Customer.Where(c=>c.Email == customerIn.Email).Any())
+            {
+                return false;
+            }
+
             try
             {
                 _context.Add(customer);
                 _context.SaveChanges();
+                return true;
             }
             catch 
             {
+                return false;
                 //TODO
             }
         }
 
         public void UpdateCustomer(Customer customer)
         {
+            var customerExistent = _context.Customer.AsNoTracking().Where(c => c.CustomerId == customer.CustomerId).FirstOrDefault();
+            customer.PasswordHash = customerExistent.PasswordHash;
+            customer.PasswordSalt = customerExistent.PasswordSalt;
             try
             {
-                _context.Update(customer);
+                _context.Attach(customer);
+                _context.Customer.Update(customer);
                 _context.SaveChanges();
             }
-            catch
+            catch (Exception ex)
             {
                 //TODO
             }

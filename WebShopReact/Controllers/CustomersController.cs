@@ -1,7 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebShop.Managers;
+using WebShopReact.Managers;
 using WebShopReact.Models;
 
 namespace WebShop.Controllers
@@ -20,10 +21,10 @@ namespace WebShop.Controllers
         // POST: Customers/authenticate
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody]CustomerDTO customer)
+        public IActionResult Authenticate([FromBody]LoginInput customer)
         {
             var response = _customerManager.Authenticate(customer);
-            if (response == null) return BadRequest("Email or password is incorrect");
+            if (response == null) return BadRequest(new { error = "Email or password is incorrect" });
             return Ok(response);
         }
 
@@ -42,19 +43,28 @@ namespace WebShop.Controllers
 
         // POST: Customers/Create
         [HttpPost]
+        [AllowAnonymous]
         public IActionResult Create([FromBody][Bind("CustomerId,FirstName,LastName,Email,Age,ShoppingCartId")] CustomerDTO customer)
         {
             if (ModelState.IsValid)
             {
-                _customerManager.AddCustomer(customer);
-                return CreatedAtAction("Details", new { id = customer.CustomerId });
+                var created = _customerManager.AddCustomer(customer);
+                if (created)
+                    return CreatedAtAction("Details", new { id = customer.CustomerId });
+                else
+                    return BadRequest(new { Error = "Email Already Taken" });
             }
             return BadRequest(ModelState);
         }
         // POST: Customers/Edit/5
         [HttpPut("{id}")]
+        [Authorize]
         public IActionResult Edit(int id, [Bind("CustomerId,FirstName,LastName,Email,Age,ShoppingCartId")] Customer customer)
         {
+            if (id.ToString() != User.Identity.Name)
+            {
+                return Unauthorized();
+            }
             if (id != customer.CustomerId)
             {
                 return NotFound();

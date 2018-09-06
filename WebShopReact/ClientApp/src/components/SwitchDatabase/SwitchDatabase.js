@@ -10,7 +10,11 @@ export class SwitchDatabase extends Component {
             save: false
         };
         this.handleOptionChange = this.handleOptionChange.bind(this);
-        fetch('api/connection')
+        fetch('api/connection', {
+                headers: new Headers({
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwIiwiRGF0YWJhc2UiOiJTcWxTZXJ2ZXIiLCJuYmYiOjE1MzYyNzIyOTYsImV4cCI6MTUzNjg3NzA5NiwiaWF0IjoxNTM2MjcyMjk2fQ.dKOhl93FsnB1YNbvHd3-M3IAPKOEu0Yz0YR-JmN12a8'
+                })
+            })
             .then(response => response.json())
             .then(data => {
                 this.setState({
@@ -28,11 +32,19 @@ export class SwitchDatabase extends Component {
         fetch("/api/connection",
             {
                 method: "post",
-                headers: { 'Content-Type': 'application/json' },
+                headers: new Headers({
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwIiwiRGF0YWJhc2UiOiJTcWxTZXJ2ZXIiLCJuYmYiOjE1MzYyNzIyOTYsImV4cCI6MTUzNjg3NzA5NiwiaWF0IjoxNTM2MjcyMjk2fQ.dKOhl93FsnB1YNbvHd3-M3IAPKOEu0Yz0YR-JmN12a8',
+                    'Content-Type': 'application/json' }),
                 body: JSON.stringify(this.formToJson(form))
             })
+            .then(response => {
+                if (response.ok) {
+                    this.setState({ save: true, })
+                };
+                return response.json();
+            })
             .then(data => {
-                if (data.ok)  this.setState({ save: true, });
+                console.log(data);
             })
     }
     render() {
