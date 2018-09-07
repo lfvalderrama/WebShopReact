@@ -1,38 +1,57 @@
-﻿import React, { Component } from 'react'
+﻿import React, { Component } from 'react';
+import AuthService from '../../services/AuthService';
 
 export class SwitchDatabase extends Component {
     constructor(props) {
         super(props);
+        this.Auth = new AuthService();
         this.state = {
             connections: [],
             current: "",
             loading: true,
-            save: false
+            save: false,
+            token: this.Auth.getToken()
         };
         this.handleOptionChange = this.handleOptionChange.bind(this);
-        fetch('api/connection')
-            .then(response => response.json())
-            .then(data => {
-                this.setState({
-                    connections: data.connection,
-                    current: data.current[0],
-                    loading: false
+        if (this.state.token == null) {
+            this.props.history.replace('/login');
+        }
+        else {
+            fetch('api/connection', {
+                headers: new Headers({
+                    'Authorization': this.state.token
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    this.setState({
+                        connections: data.connection,
+                        current: data.current[0],
+                        loading: false
+                    });
                 });
-            });
+        }
     }
 
     handleSave(e) {
         e.preventDefault()        
         let form = Element = document.querySelector('#frmSwitchDatabase')
-        console.log(JSON.stringify(this.formToJson(form)));
         fetch("/api/connection",
             {
                 method: "post",
-                headers: { 'Content-Type': 'application/json' },
+                headers: new Headers({
+                    'Authorization': this.state.token,
+                    'Content-Type': 'application/json' }),
                 body: JSON.stringify(this.formToJson(form))
             })
+            .then(response => {
+                if (response.ok) {
+                    this.setState({ save: true, })
+                };
+                return response.json();
+            })
             .then(data => {
-                if (data.ok)  this.setState({ save: true, });
+                this.Auth.setToken(data)
             })
     }
     render() {

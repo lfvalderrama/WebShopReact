@@ -1,23 +1,37 @@
 ﻿import React, { Component } from 'react';
+import AuthService from '../../services/AuthService';
 
 
 export class ShoppingCart extends Component {
     constructor(props) {
         super(props);
+        this.Auth = new AuthService();
         this.state = {
             shoppingCart: [],
             loading: true,
-            activeId: 0
+            token: this.Auth.getToken()
+
         };
-        fetch('api/shoppingCart')
-            .then(response => response.json())
-            .then(data => {
-                this.setState({
-                    shoppingCart: data,
-                    loading: false,
-                    activeId: 0
+        if (this.state.token == null) {
+            this.props.history.replace('/login');
+        }
+        else {
+            fetch('api/shoppingCart',
+                {
+                    headers: new Headers({
+                        'Authorization': this.state.token
+                    })
+                }
+            )
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    this.setState({
+                        shoppingCart: data,
+                        loading: false
+                    });
                 });
-            });
+        }
     }
 
     handleDelete(id) {

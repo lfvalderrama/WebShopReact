@@ -1,17 +1,25 @@
 ﻿import React from 'react';
+import AuthService from '../../services/AuthService';
 
 export class ProductDetails extends React.Component {
     constructor(props) {
         super(props);
+        this.Auth = new AuthService();
         this.state = {
             product: null,
             loading: true,
             addedToCart: false,
-            inputValue: 0
+            inputValue: 0,
+            addedToCartUnautorized: false,
+            token: this.Auth.getToken()
         };
 
         this.updateInputValue = this.updateInputValue.bind(this);
-        fetch('api/products/' + this.props.productId, { method: 'get' })
+        fetch('api/products/' + this.props.productId, {
+            headers: new Headers({
+                'Authorization': this.state.token
+            })
+        })
             .then(response => response.json())
             .then(data => {
                 this.setState({ product: data, loading: false })
@@ -35,15 +43,25 @@ export class ProductDetails extends React.Component {
             fetch("api/shoppingCart/",
                 {
                     method: "post",
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: new Headers({
+                        'Authorization': this.state.token,
+                        'Content-Type': 'application/json' }),
                     body: JSON.stringify(product)
                 })
                 .then(data => {
-                    product.quantity = oldQuantity;
-                    this.setState({
-                        addedToCart: true,
-                        product: product
-                    });
+                    if (data.status != 401) {
+                        product.quantity = oldQuantity;
+                        this.setState({
+                            addedToCart: true,
+                            product: product,
+                            addedToCartUnautorized: false
+                        });
+                    }
+                    else {
+                        this.setState({
+                            addedToCartUnautorized: true
+                        })
+                    }
                 })
         }
     }
@@ -75,6 +93,7 @@ export class ProductDetails extends React.Component {
                 <button className="action" onClick={() => this.handleAddToCart(product)}>Add To Cart</button>
                 <br/>
                     {this.state.addedToCart == true ? <div><br /><p> Item Added to Cart </p> </div> : null}
+                    {this.state.addedToCartUnautorized == true ? <div><br /><p> Please login to add items to your shopping cart </p> </div> : null}
                 </div>
             </div>);
     }

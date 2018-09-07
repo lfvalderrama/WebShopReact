@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using WebShop.Models;
-using WebShop.Managers;
+using WebShopReact.Models;
+using WebShopReact.Managers;
 using System.Collections.Generic;
 
 namespace WebShop.Controllers

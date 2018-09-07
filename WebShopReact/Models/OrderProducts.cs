@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WebShop.Models
+namespace WebShopReact.Models
 {
     public partial class OrderProducts
     {

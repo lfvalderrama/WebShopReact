@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using WebShop.Models;
+using WebShopReact.Helpers;
+using WebShopReact.Models;
 
-namespace WebShop.Managers
+namespace WebShopReact.Managers
 {
     public class ShoppingCartManager
     {
@@ -56,7 +57,6 @@ namespace WebShop.Managers
             try
             {
                 var shoppingCartProducts = _context.ShoppingCartProducts.Where(sc => sc.CustomerId == customer_id && sc.ProductId == product.ProductId).FirstOrDefault();
-
                 if (shoppingCartProducts != null)
                 {
                     shoppingCartProducts.Quantity = product.Quantity;

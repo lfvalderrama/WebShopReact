@@ -1,44 +1,61 @@
 ﻿import React from 'react';
 import Modal from 'react-modal';
-import { CustomerCreateEdit } from './CreateEdit'
+import { CustomerCreateEdit } from './CreateEdit';
+import AuthService from '../../services/AuthService';
 
 Modal.setAppElement('#root')
 
 export class customer extends React.Component {
     constructor(props) {
         super(props);
+        this.closeModal = this.closeModal.bind(this);
+        this.Auth = new AuthService();
+        this.fetchUser = this.fetchUser.bind(this);
         this.state = {
             customer: null,
             loading: true,
-            customerId: 1,
+            customerId: null,
             customerLoaded: false,
             showCreate: false,
             showUpdate: false,
             showModal: false,
-            activeId: 1
+            token: this.Auth.getToken()
         };
-        this.closeModal = this.closeModal.bind(this);
+    }
 
-        fetch('api/customers/' + this.state.customerId, { method: 'get' })
+    componentWillMount() {
+        if (this.state.token == null) {
+            this.setState({
+                showCreate: true
+            })
+        }
+        else {
+            this.fetchUser();
+        }
+    }
+
+    fetchUser() {
+        fetch('api/customers/details',  {
+            method: 'get',
+            headers: new Headers({
+                'Authorization': this.state.token
+            })
+        })
             .then(response => response.json())
             .then(data => {
                 this.setState({
                     customer: data,
                     loading: false,
+                    customerLoaded: true,
+                    customerId: data.customerId,
                     customerLoaded: true
                 })
-            })
-            .catch(error => {  
-                this.setState({
-                    showCreate: true
-                })
-            })
+            })    
     }
 
     renderPopup() {
         if (!this.state.showCreate && !this.state.showUpdate)
             return
-        console.log("modal");
         return (<Modal
             isOpen={true}
             contentLabel="Crawl"
@@ -55,7 +72,7 @@ export class customer extends React.Component {
         }
 
         if (this.state.showUpdate) {
-            return <CustomerCreateEdit customerId={this.state.activeId} dbaction="edit"
+            return <CustomerCreateEdit token={this.state.token} dbaction="edit"
                 onSave={this.handlePopupSave.bind(this)} />
         }
     }
@@ -67,17 +84,16 @@ export class customer extends React.Component {
 
     handlePopupSave(success) {
         if (success) {
-            fetch('api/customers/' + this.state.customerId, { method: 'get' })
-                .then(response => response.json())
-                .then(data => {
-                    this.setState({
-                        customer: data,
-                        loading: false,
-                        customerLoaded: true,
-                        showCreate: false,
-                        showUpdate: false 
-                    })
+            if (this.state.showCreate == true) {
+                alert("User Registered!");
+                this.props.history.replace('/login');
+            }
+            else {
+                this.setState({
+                    showUpdate: false
                 })
+                this.fetchUser();
+            }
         }
     }
 

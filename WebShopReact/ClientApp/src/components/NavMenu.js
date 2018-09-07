@@ -28,6 +28,11 @@ export class NavMenu extends Component {
                 <Glyphicon glyph='shopping-cart' /> Shopping Cart
               </NavItem>
             </LinkContainer>
+                    <LinkContainer to={'/login'}>
+                        <NavItem>
+                            <Glyphicon glyph='user' /> Login
+              </NavItem>
+                    </LinkContainer>
             <LinkContainer to={'/user'}>
               <NavItem>
                 <Glyphicon glyph='user' /> User
@@ -37,7 +42,19 @@ export class NavMenu extends Component {
                 <NavItem>
                     <Glyphicon glyph='floppy-save' /> Switch Database
                 </NavItem>
-            </LinkContainer>
+                    </LinkContainer>
+
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <LinkContainer to={'/logout'}>
+                        <NavItem>
+                            <Glyphicon glyph='user' /> Logout
+              </NavItem>
+                    </LinkContainer>
 
           </Nav>
         </Navbar.Collapse>

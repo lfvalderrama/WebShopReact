@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebShop.Managers;
-using WebShop.Models;
+using WebShopReact.Managers;
+using WebShopReact.Models;
 
 namespace WebShop.Controllers
 {
@@ -16,11 +19,23 @@ namespace WebShop.Controllers
             _customerManager = customerManager;
         }
 
-        // GET: Customers/Details/5
-        [HttpGet("{id}")]
-        public IActionResult Details(int? id)
+        // POST: Customers/authenticate
+        [AllowAnonymous]
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate([FromBody]LoginInput customer)
         {
-            var customer = _customerManager.GetCustomer((int)id);
+            var response = _customerManager.Authenticate(customer);
+            if (response == null) return BadRequest(new { error = "Email or password is incorrect" });
+            return Ok(response);
+        }
+
+        // GET: Customers/Details/5
+        [HttpGet("details")]
+        [Authorize]
+        public IActionResult Details()
+        {
+            var id = Int32.Parse(User.Identity.Name);
+            var customer = _customerManager.GetCustomer(id);
             if (customer == null)
             {
                 return NotFound();
@@ -30,19 +45,25 @@ namespace WebShop.Controllers
 
         // POST: Customers/Create
         [HttpPost]
-        public IActionResult Create([FromBody][Bind("CustomerId,FirstName,LastName,Email,Age,ShoppingCartId")] Customer customer)
+        [AllowAnonymous]
+        public IActionResult Create([FromBody][Bind("CustomerId,FirstName,LastName,Email,Age,ShoppingCartId")] CustomerDTO customer)
         {
             if (ModelState.IsValid)
             {
-                _customerManager.AddCustomer(customer);
-                return CreatedAtAction("Details", new { id = customer.CustomerId });
+                var created = _customerManager.AddCustomer(customer);
+                if (created)
+                    return CreatedAtAction("Details", new { id = customer.CustomerId });
+                else
+                    return BadRequest(new { Error = "Email Already Taken" });
             }
             return BadRequest(ModelState);
         }
         // POST: Customers/Edit/5
-        [HttpPut("{id}")]
-        public IActionResult Edit(int id, [Bind("CustomerId,FirstName,LastName,Email,Age,ShoppingCartId")] Customer customer)
+        [HttpPut]
+        [Authorize]
+        public IActionResult Edit([Bind("CustomerId,FirstName,LastName,Email,Age,ShoppingCartId")] Customer customer)
         {
+            var id = Int32.Parse(User.Identity.Name);
             if (id != customer.CustomerId)
             {
                 return NotFound();

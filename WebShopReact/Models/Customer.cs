@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WebShop.Models
+namespace WebShopReact.Models
 {
     public partial class Customer
     {
@@ -16,6 +16,8 @@ namespace WebShop.Models
         public string LastName { get; set; }
         public string Email { get; set; }
         public int Age { get; set; }
+        public byte[] PasswordHash { get; set; }
+        public byte[] PasswordSalt { get; set; }
 
         public ICollection<Order> Order { get; set; }
         public ICollection<ShoppingCartProducts> ShoppingCartProducts { get; set; }

@@ -1,8 +1,9 @@
 ﻿using Autofac.Features.Indexed;
 using Microsoft.AspNetCore.Http;
-using WebShop.Models;
+using System.Linq;
+using WebShopReact.Models;
 
-namespace WebShop.Managers
+namespace WebShopReact.Helpers
 {
     public interface IContextHelper
     {
@@ -25,10 +26,10 @@ namespace WebShop.Managers
 
         public WebShopContext SetContext()
         {
-            var type = _accessor.HttpContext.Session.GetString("connection");
-            var connectionType = ConnectionTypes.SqlServer;
-            if (type != null) connectionType = (ConnectionTypes)System.Enum.Parse(typeof(ConnectionTypes), type);
-            else _accessor.HttpContext.Session.SetString("connection", ConnectionTypes.SqlServer.ToString());
+            var userClaim = _accessor.HttpContext.User.Claims.Where(c => c.Type == "Database").FirstOrDefault();
+            var type = ConnectionTypes.SqlServer.ToString();
+            if (userClaim != null) type = userClaim.Value;
+            var connectionType = (ConnectionTypes)System.Enum.Parse(typeof(ConnectionTypes), type);
             _context = _contexts[connectionType];
             return _context;
         }

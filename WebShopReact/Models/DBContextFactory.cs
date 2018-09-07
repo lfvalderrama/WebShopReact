@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace WebShop.Models
+namespace WebShopReact.Models
 {
     public class DBContextFactory
     {
