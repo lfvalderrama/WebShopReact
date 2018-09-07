@@ -4,6 +4,7 @@ using WebShopReact.Managers;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using System;
+using System.Linq;
 
 namespace WebShop.Controllers
 {
@@ -42,6 +43,7 @@ namespace WebShop.Controllers
         public IActionResult AddToCart([FromBody][Bind("ProductId,Name,Description,Price,Quantity")] Product product)
         {
             _customer_id = Int32.Parse(User.Identity.Name);
+            var test = User.Claims.Where(c => c.Type == "Database").FirstOrDefault();
             _shoppingCartManager.AddToCart(_customer_id, product);
             return CreatedAtAction("Details", "Products", new { id = product.ProductId });
         }

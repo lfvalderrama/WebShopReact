@@ -2,12 +2,14 @@
 import Modal from 'react-modal';
 import { ProductCreateEdit } from './CreateEdit'
 import { ProductDetails } from './Details'
+import AuthService from '../../services/AuthService';
 
 Modal.setAppElement('#root')
 
 export class Products extends Component {
     constructor(props) {
         super(props);
+        this.Auth = new AuthService();
         this.state = {
             product: [],
             loading: true,
@@ -15,9 +17,14 @@ export class Products extends Component {
             showDetails: false,
             showUpdate: false,
             showModal: true,
-            activeId: 0
+            activeId: 0,
+            token: this.Auth.getToken()
         };
-        fetch('api/products')
+        fetch('api/products', {
+            headers: new Headers({
+                'Authorization': this.state.token
+            })
+        })
             .then(response => response.json())
             .then(data => {
                 this.setState({
@@ -34,7 +41,11 @@ export class Products extends Component {
     }
 
     fetchIndex() {
-        fetch('api/products')
+        fetch('api/products', {
+            headers: new Headers({
+                'Authorization': this.state.token
+            })
+        })
             .then(response => response.json())
             .then(data => {
                 this.setState({
@@ -64,7 +75,11 @@ export class Products extends Component {
     handleDelete(id) {
         if (!window.confirm("Are you sure to delete this item?"))
             return
-        fetch('api/products/' + id, { method: 'delete' })
+        fetch('api/products/' + id, { method: 'delete' }, {
+            headers: new Headers({
+                'Authorization': this.state.token
+            })
+        })
             .then(data => {
                 this.setState({
                     product: this.state.product.filter((rec) => {

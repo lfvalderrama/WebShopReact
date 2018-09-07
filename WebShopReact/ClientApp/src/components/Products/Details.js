@@ -1,18 +1,25 @@
 ﻿import React from 'react';
+import AuthService from '../../services/AuthService';
 
 export class ProductDetails extends React.Component {
     constructor(props) {
         super(props);
+        this.Auth = new AuthService();
         this.state = {
             product: null,
             loading: true,
             addedToCart: false,
             inputValue: 0,
-            addedToCartUnautorized: false
+            addedToCartUnautorized: false,
+            token: this.Auth.getToken()
         };
 
         this.updateInputValue = this.updateInputValue.bind(this);
-        fetch('api/products/' + this.props.productId, { method: 'get' })
+        fetch('api/products/' + this.props.productId, {
+            headers: new Headers({
+                'Authorization': this.state.token
+            })
+        })
             .then(response => response.json())
             .then(data => {
                 this.setState({ product: data, loading: false })
@@ -37,7 +44,7 @@ export class ProductDetails extends React.Component {
                 {
                     method: "post",
                     headers: new Headers({
-                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwIiwiRGF0YWJhc2UiOiJTcWxTZXJ2ZXIiLCJuYmYiOjE1MzYyNzIyOTYsImV4cCI6MTUzNjg3NzA5NiwiaWF0IjoxNTM2MjcyMjk2fQ.dKOhl93FsnB1YNbvHd3-M3IAPKOEu0Yz0YR-JmN12a8',
+                        'Authorization': this.state.token,
                         'Content-Type': 'application/json' }),
                     body: JSON.stringify(product)
                 })

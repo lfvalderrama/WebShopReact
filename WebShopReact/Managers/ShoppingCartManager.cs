@@ -57,7 +57,6 @@ namespace WebShopReact.Managers
             try
             {
                 var shoppingCartProducts = _context.ShoppingCartProducts.Where(sc => sc.CustomerId == customer_id && sc.ProductId == product.ProductId).FirstOrDefault();
-
                 if (shoppingCartProducts != null)
                 {
                     shoppingCartProducts.Quantity = product.Quantity;

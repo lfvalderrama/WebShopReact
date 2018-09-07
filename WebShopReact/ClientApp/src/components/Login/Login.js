@@ -11,13 +11,12 @@ export class Login extends Component {
              email: '',
              password: '',
             error: false,
-            token: '',
-            customerId: this.Auth.getCustomerId()
+            token: this.Auth.getToken()
         }
     }
 
     componentWillMount() {
-        if (this.state.customerId != null) {
+        if (this.state.token != null) {
             this.props.history.replace('/user');
         }
     }

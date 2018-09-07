@@ -42,7 +42,19 @@ export class NavMenu extends Component {
                 <NavItem>
                     <Glyphicon glyph='floppy-save' /> Switch Database
                 </NavItem>
-            </LinkContainer>
+                    </LinkContainer>
+
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <LinkContainer to={'/logout'}>
+                        <NavItem>
+                            <Glyphicon glyph='user' /> Logout
+              </NavItem>
+                    </LinkContainer>
 
           </Nav>
         </Navbar.Collapse>

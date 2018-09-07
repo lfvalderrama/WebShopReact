@@ -1,17 +1,23 @@
 ﻿import React, { Component } from 'react'
+import AuthService from '../../services/AuthService';
 
 export class ProductCreateEdit extends Component {
     constructor(props) {
         super(props);
+        this.Auth = new AuthService();
         if (this.props.dbaction == "edit") {
-            this.state = { product: null, loading: true, save: false }
-            fetch('api/products/' + this.props.productId, { method: 'get' })
+            this.state = { product: null, loading: true, save: false,token: this.Auth.getToken() }
+            fetch('api/products/' + this.props.productId, { method: 'get' }, {
+                headers: new Headers({
+                    'Authorization': this.state.token
+                })
+            })
                 .then(response => response.json())
                 .then(data => {
                     this.setState({ product: data, loading: false })
                 })
         } else {
-            this.state = { product: null, loading: false, save: false }
+            this.state = { product: null, loading: false, save: false, token: this.Auth.getToken() }
         }
     }
 
@@ -24,7 +30,8 @@ export class ProductCreateEdit extends Component {
         fetch(url,
             {
                 method: meth,
-                headers: { 'Content-Type': 'application/json' },
+                headers: new Headers({
+                    'Authorization': this.state.token, 'Content-Type': 'application/json' }),
                 body: JSON.stringify(this.formToJson(form))
             })
             .then(data => {
