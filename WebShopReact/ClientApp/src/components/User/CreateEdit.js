@@ -8,7 +8,7 @@ export class CustomerCreateEdit extends Component {
                 customer: null,
                 loading: true,
             }
-            fetch('api/customers/' + this.props.customerId, {
+            fetch('api/customers/details', {
                 method: 'get',
                 headers: new Headers({
                     'Authorization': this.props.token
@@ -25,9 +25,9 @@ export class CustomerCreateEdit extends Component {
 
     handleSave(e) {
         e.preventDefault()
-        let meth = (this.props.dbaction == "edit" ? "put" : "post")
-        let form = Element = document.querySelector('#frmCreateEdit')
-        let url = (this.props.dbaction == "edit" ? 'api/customers/' + this.props.customerId : 'api/customers/')
+        let meth = (this.props.dbaction == "edit" ? "put" : "post");
+        let form = Element = document.querySelector('#frmCreateEdit');
+        let url = 'api/customers/';
         fetch(url,
             {
                 method: meth,

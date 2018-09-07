@@ -36,7 +36,6 @@ export class SwitchDatabase extends Component {
     handleSave(e) {
         e.preventDefault()        
         let form = Element = document.querySelector('#frmSwitchDatabase')
-        console.log(JSON.stringify(this.formToJson(form)));
         fetch("/api/connection",
             {
                 method: "post",
@@ -52,7 +51,7 @@ export class SwitchDatabase extends Component {
                 return response.json();
             })
             .then(data => {
-                console.log(data);
+                this.Auth.setToken(data)
             })
     }
     render() {

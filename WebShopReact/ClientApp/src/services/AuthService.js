@@ -28,22 +28,15 @@
 
     setToken(data) {
         localStorage.setItem('token', data.token)
-        localStorage.setItem('customerId', data.customerId)
     }
 
     getToken() {
         if (localStorage.getItem('token') == null) return null
         return 'Bearer ' + localStorage.getItem('token')
     }
-
-    getCustomerId() {
-        return localStorage.getItem('customerId')
-    }
-
     logout() {
         // Clear user token and profile data from localStorage
         localStorage.removeItem('token');
-        localStorage.removeItem('customerId')
     }
 
 }

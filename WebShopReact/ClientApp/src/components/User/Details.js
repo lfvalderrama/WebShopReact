@@ -14,7 +14,7 @@ export class customer extends React.Component {
         this.state = {
             customer: null,
             loading: true,
-            customerId: this.Auth.getCustomerId(),
+            customerId: null,
             customerLoaded: false,
             showCreate: false,
             showUpdate: false,
@@ -24,7 +24,7 @@ export class customer extends React.Component {
     }
 
     componentWillMount() {
-        if (this.state.customerId == null) {
+        if (this.state.token == null) {
             this.setState({
                 showCreate: true
             })
@@ -35,7 +35,7 @@ export class customer extends React.Component {
     }
 
     fetchUser() {
-        fetch('api/customers/' + this.state.customerId, {
+        fetch('api/customers/details',  {
             method: 'get',
             headers: new Headers({
                 'Authorization': this.state.token
@@ -47,7 +47,7 @@ export class customer extends React.Component {
                     customer: data,
                     loading: false,
                     customerLoaded: true,
-                    activeId: data.customerId,
+                    customerId: data.customerId,
                     customerLoaded: true
                 })
             })    
@@ -72,7 +72,7 @@ export class customer extends React.Component {
         }
 
         if (this.state.showUpdate) {
-            return <CustomerCreateEdit customerId={this.state.customerId} token={this.state.token} dbaction="edit"
+            return <CustomerCreateEdit token={this.state.token} dbaction="edit"
                 onSave={this.handlePopupSave.bind(this)} />
         }
     }

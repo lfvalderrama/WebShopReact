@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,11 +30,12 @@ namespace WebShop.Controllers
         }
 
         // GET: Customers/Details/5
-        [HttpGet("{id}")]
+        [HttpGet("details")]
         [Authorize]
-        public IActionResult Details(int? id)
+        public IActionResult Details()
         {
-            var customer = _customerManager.GetCustomer((int)id);
+            var id = Int32.Parse(User.Identity.Name);
+            var customer = _customerManager.GetCustomer(id);
             if (customer == null)
             {
                 return NotFound();
@@ -57,14 +59,11 @@ namespace WebShop.Controllers
             return BadRequest(ModelState);
         }
         // POST: Customers/Edit/5
-        [HttpPut("{id}")]
+        [HttpPut]
         [Authorize]
-        public IActionResult Edit(int id, [Bind("CustomerId,FirstName,LastName,Email,Age,ShoppingCartId")] Customer customer)
+        public IActionResult Edit([Bind("CustomerId,FirstName,LastName,Email,Age,ShoppingCartId")] Customer customer)
         {
-            if (id.ToString() != User.Identity.Name)
-            {
-                return Unauthorized();
-            }
+            var id = Int32.Parse(User.Identity.Name);
             if (id != customer.CustomerId)
             {
                 return NotFound();
