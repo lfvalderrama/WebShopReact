@@ -1,49 +1,61 @@
 ﻿import React from 'react';
 import Modal from 'react-modal';
-import { CustomerCreateEdit } from './CreateEdit'
+import { CustomerCreateEdit } from './CreateEdit';
+import AuthService from '../../services/AuthService';
 
 Modal.setAppElement('#root')
 
 export class customer extends React.Component {
     constructor(props) {
         super(props);
+        this.closeModal = this.closeModal.bind(this);
+        this.Auth = new AuthService();
+        this.fetchUser = this.fetchUser.bind(this);
         this.state = {
             customer: null,
             loading: true,
-            customerId: 10,
+            customerId: this.Auth.getCustomerId(),
             customerLoaded: false,
             showCreate: false,
             showUpdate: false,
             showModal: false,
-            activeId: 1
+            token: this.Auth.getToken()
         };
-        this.closeModal = this.closeModal.bind(this);
+    }
 
-        fetch('api/customers/' + this.state.customerId, { method: 'get',
+    componentWillMount() {
+        if (this.state.customerId == null) {
+            this.setState({
+                showCreate: true
+            })
+        }
+        else {
+            this.fetchUser();
+        }
+    }
+
+    fetchUser() {
+        fetch('api/customers/' + this.state.customerId, {
+            method: 'get',
             headers: new Headers({
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwIiwiRGF0YWJhc2UiOiJTcWxTZXJ2ZXIiLCJuYmYiOjE1MzYyNzIyOTYsImV4cCI6MTUzNjg3NzA5NiwiaWF0IjoxNTM2MjcyMjk2fQ.dKOhl93FsnB1YNbvHd3-M3IAPKOEu0Yz0YR-JmN12a8'
+                'Authorization': this.state.token
             })
-            })
+        })
             .then(response => response.json())
             .then(data => {
                 this.setState({
                     customer: data,
                     loading: false,
                     customerLoaded: true,
-                    activeId: data.customerId
+                    activeId: data.customerId,
+                    customerLoaded: true
                 })
-            })
-            .catch(error => {  
-                this.setState({
-                    showCreate: true
-                })
-            })
+            })    
     }
 
     renderPopup() {
         if (!this.state.showCreate && !this.state.showUpdate)
             return
-        console.log("modal");
         return (<Modal
             isOpen={true}
             contentLabel="Crawl"
@@ -60,7 +72,7 @@ export class customer extends React.Component {
         }
 
         if (this.state.showUpdate) {
-            return <CustomerCreateEdit customerId={this.state.activeId} dbaction="edit"
+            return <CustomerCreateEdit customerId={this.state.customerId} token={this.state.token} dbaction="edit"
                 onSave={this.handlePopupSave.bind(this)} />
         }
     }
@@ -72,21 +84,16 @@ export class customer extends React.Component {
 
     handlePopupSave(success) {
         if (success) {
-            fetch('api/customers/' + this.state.customerId, {
-                method: 'get',
-                headers: new Headers({
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwIiwiRGF0YWJhc2UiOiJTcWxTZXJ2ZXIiLCJuYmYiOjE1MzYyNzIyOTYsImV4cCI6MTUzNjg3NzA5NiwiaWF0IjoxNTM2MjcyMjk2fQ.dKOhl93FsnB1YNbvHd3-M3IAPKOEu0Yz0YR-JmN12a8'
-                })})
-                .then(response => response.json())
-                .then(data => {
-                    this.setState({
-                        customer: data,
-                        loading: false,
-                        customerLoaded: true,
-                        showCreate: false,
-                        showUpdate: false 
-                    })
+            if (this.state.showCreate == true) {
+                alert("User Registered!");
+                this.props.history.replace('/login');
+            }
+            else {
+                this.setState({
+                    showUpdate: false
                 })
+                this.fetchUser();
+            }
         }
     }
 

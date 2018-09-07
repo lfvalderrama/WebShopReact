@@ -1,4 +1,4 @@
-﻿import React, { Component } from 'react'
+﻿import React, { Component } from 'react';
 
 export class CustomerCreateEdit extends Component {
     constructor(props) {
@@ -11,7 +11,7 @@ export class CustomerCreateEdit extends Component {
             fetch('api/customers/' + this.props.customerId, {
                 method: 'get',
                 headers: new Headers({
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwIiwiRGF0YWJhc2UiOiJTcWxTZXJ2ZXIiLCJuYmYiOjE1MzYyNzIyOTYsImV4cCI6MTUzNjg3NzA5NiwiaWF0IjoxNTM2MjcyMjk2fQ.dKOhl93FsnB1YNbvHd3-M3IAPKOEu0Yz0YR-JmN12a8'
+                    'Authorization': this.props.token
                 })
             })
                 .then(response => response.json())
@@ -32,7 +32,7 @@ export class CustomerCreateEdit extends Component {
             {
                 method: meth,
                 headers: new Headers({
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwIiwiRGF0YWJhc2UiOiJTcWxTZXJ2ZXIiLCJuYmYiOjE1MzYyNzIyOTYsImV4cCI6MTUzNjg3NzA5NiwiaWF0IjoxNTM2MjcyMjk2fQ.dKOhl93FsnB1YNbvHd3-M3IAPKOEu0Yz0YR-JmN12a8',
+                    'Authorization': this.props.token,
                     'Content-Type': 'application/json' }),
                 body: JSON.stringify(this.formToJson(form))
             })
@@ -46,7 +46,7 @@ export class CustomerCreateEdit extends Component {
             ? <p><em>Loading...</em></p>
             : this.renderForm(this.state.customer);
         return (<div>
-            <h1>{this.props.dbaction == "edit" ? "Edit User" : "Create User"}</h1>
+            <h1>{this.props.dbaction == "edit" ? "Edit User" : "Register User"}</h1>
             {contents}
         </div>)
     }

@@ -1,42 +1,43 @@
 ﻿import React, { Component } from 'react'
+import AuthService from '../../services/AuthService';
 
 export class Login extends Component {
     constructor(props) {
         super(props);
+        this.emailChanged = this.emailChanged.bind(this);
+        this.passChanged = this.passChanged.bind(this);
+        this.Auth = new AuthService();
         this.state = {
              email: '',
              password: '',
             error: false,
-            token: ''
+            token: '',
+            customerId: this.Auth.getCustomerId()
         }
-        this.emailChanged = this.emailChanged.bind(this);
-        this.passChanged = this.passChanged.bind(this);
+    }
+
+    componentWillMount() {
+        if (this.state.customerId != null) {
+            this.props.history.replace('/user');
+        }
     }
 
     handleSave(e) {
         e.preventDefault()
         if (this.state.password != '' && this.state.email != '') {
             let form = Element = document.querySelector('#frmLogin')
-            fetch('api/customers/authenticate',
-                {
-                    method: 'post',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(this.formToJson(form))
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error != null) {
+            let formInfo = JSON.stringify(this.formToJson(form));
+            this.Auth.login(formInfo)
+                .then(res => {
+                    if (res.error != null) {
                         this.setState({
                             error: true
                         })
                     }
                     else {
-                        this.setState({
-                            token: data.token
-                        })
-                        this.handleToken();
-                    }
-                })
+                            this.props.history.replace('/user');
+                        }
+                })            
         }
     }
 
@@ -45,17 +46,13 @@ export class Login extends Component {
             ? <p><em>Loading...</em></p>
             : this.renderForm(this.state.customer);
         return (<div>
-            <h1>{this.props.dbaction == "edit" ? "Edit User" : "Create User"}</h1>
+            <h1>Login</h1>
             {contents}
             <br/>
             <div>
                 {this.state.error == true ? <p> The Email or password are incorrect </p> : null}
             </div>
         </div>)
-    }
-
-    handleToken() {
-        console.log("token " + this.state.token);
     }
 
     emailChanged(evt) {

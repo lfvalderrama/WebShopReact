@@ -1,28 +1,36 @@
-﻿import React, { Component } from 'react'
+﻿import React, { Component } from 'react';
+import AuthService from '../../services/AuthService';
 
 export class SwitchDatabase extends Component {
     constructor(props) {
         super(props);
+        this.Auth = new AuthService();
         this.state = {
             connections: [],
             current: "",
             loading: true,
-            save: false
+            save: false,
+            token: this.Auth.getToken()
         };
         this.handleOptionChange = this.handleOptionChange.bind(this);
-        fetch('api/connection', {
+        if (this.state.token == null) {
+            this.props.history.replace('/login');
+        }
+        else {
+            fetch('api/connection', {
                 headers: new Headers({
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwIiwiRGF0YWJhc2UiOiJTcWxTZXJ2ZXIiLCJuYmYiOjE1MzYyNzIyOTYsImV4cCI6MTUzNjg3NzA5NiwiaWF0IjoxNTM2MjcyMjk2fQ.dKOhl93FsnB1YNbvHd3-M3IAPKOEu0Yz0YR-JmN12a8'
+                    'Authorization': this.state.token
                 })
             })
-            .then(response => response.json())
-            .then(data => {
-                this.setState({
-                    connections: data.connection,
-                    current: data.current[0],
-                    loading: false
+                .then(response => response.json())
+                .then(data => {
+                    this.setState({
+                        connections: data.connection,
+                        current: data.current[0],
+                        loading: false
+                    });
                 });
-            });
+        }
     }
 
     handleSave(e) {
@@ -33,7 +41,7 @@ export class SwitchDatabase extends Component {
             {
                 method: "post",
                 headers: new Headers({
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwIiwiRGF0YWJhc2UiOiJTcWxTZXJ2ZXIiLCJuYmYiOjE1MzYyNzIyOTYsImV4cCI6MTUzNjg3NzA5NiwiaWF0IjoxNTM2MjcyMjk2fQ.dKOhl93FsnB1YNbvHd3-M3IAPKOEu0Yz0YR-JmN12a8',
+                    'Authorization': this.state.token,
                     'Content-Type': 'application/json' }),
                 body: JSON.stringify(this.formToJson(form))
             })
