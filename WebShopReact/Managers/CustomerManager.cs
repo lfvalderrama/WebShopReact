@@ -1,18 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using WebShopReact.Helpers;
+using WebShopReact.Interfaces;
 using WebShopReact.Models;
 
 namespace WebShopReact.Managers
 {
-    public class CustomerManager
+    public class CustomerManager : ICustomerManager
     {
         private WebShopContext _context;
         private readonly IContextHelper _contextHelper;

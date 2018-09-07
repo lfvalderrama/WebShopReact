@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebShopReact.Interfaces;
 using WebShopReact.Managers;
 using WebShopReact.Models;
 
@@ -12,9 +13,9 @@ namespace WebShop.Controllers
     [ApiController]
     public class CustomersController : Controller
     {
-        private readonly CustomerManager _customerManager;
+        private readonly ICustomerManager _customerManager;
 
-        public CustomersController(CustomerManager customerManager)
+        public CustomersController(ICustomerManager customerManager)
         {
             _customerManager = customerManager;
         }

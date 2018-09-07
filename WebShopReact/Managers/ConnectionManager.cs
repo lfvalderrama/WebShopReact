@@ -1,29 +1,22 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using WebShopReact.Helpers;
+using WebShopReact.Interfaces;
 using WebShopReact.Models;
 
 namespace WebShopReact.Managers
 {
-    public interface IConnectionManager
-    {
-        string SwitchConnection(string connection);
-    }
-
-
     public class ConnectionManager : IConnectionManager
     {
         private readonly IHttpContextAccessor _accessor;
         private readonly ITokenHelper _tokenHelper;
-        private readonly CustomerManager _customerManager;
+        private readonly ICustomerManager _customerManager;
         private readonly IContextHelper _contextHelper;
         private WebShopContext _context;
 
-        public ConnectionManager(ITokenHelper tokenHelper, IHttpContextAccessor accessor, CustomerManager customerManager, IContextHelper contextHelper)
+        public ConnectionManager(ITokenHelper tokenHelper, IHttpContextAccessor accessor, ICustomerManager customerManager, IContextHelper contextHelper)
         {
             _tokenHelper = tokenHelper;
             _accessor = accessor;
@@ -40,7 +33,7 @@ namespace WebShopReact.Managers
             identity.RemoveClaim(identity.FindFirst("Database"));
             identity.AddClaim(new Claim("Database", connection));
             _context = _contextHelper.SetContext();
-            if(!_context.Customer.Where(c=>c.CustomerId == current_customer.CustomerId).Any() && current_customer !=null)
+            if(current_customer != null && !_context.Customer.Where(c=>c.CustomerId == current_customer.CustomerId).Any() )
             {
                 _context.Add(current_customer);
                 _context.SaveChanges();

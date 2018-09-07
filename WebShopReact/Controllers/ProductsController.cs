@@ -1,8 +1,7 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using WebShopReact.Models;
-using WebShopReact.Managers;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using WebShopReact.Interfaces;
+using WebShopReact.Models;
 
 namespace WebShop.Controllers
 {
@@ -10,9 +9,9 @@ namespace WebShop.Controllers
     [ApiController]
     public class ProductsController : Controller
     {
-        private readonly ProductManager _productManager;
+        private readonly IProductManager _productManager;
 
-        public ProductsController(ProductManager productManager)
+        public ProductsController(IProductManager productManager)
         {
             _productManager = productManager;
         }

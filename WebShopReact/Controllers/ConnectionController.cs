@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using WebShopReact.Interfaces;
 using WebShopReact.Models;
-using WebShopReact.Managers;
-using Microsoft.AspNetCore.Authorization;
 
 namespace WebShop.Controllers
 {
@@ -14,9 +13,9 @@ namespace WebShop.Controllers
     [ApiController]
     public class ConnectionController : Controller
     {
-        ConnectionManager _connectionManager;
+        IConnectionManager _connectionManager;
 
-        public ConnectionController(ConnectionManager connectionManager)
+        public ConnectionController(IConnectionManager connectionManager)
         {
             _connectionManager = connectionManager;
         }

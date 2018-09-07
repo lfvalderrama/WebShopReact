@@ -1,20 +1,21 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using WebShopReact.Managers;
-using WebShopReact.Models;
-using WebShopReact.Helpers;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Text;
 using System.Threading.Tasks;
+using WebShopReact.Helpers;
+using WebShopReact.Interfaces;
+using WebShopReact.Managers;
+using WebShopReact.Models;
 
 namespace WebShopReact
 {
@@ -68,7 +69,7 @@ namespace WebShopReact
                 {
                     OnTokenValidated = context =>
                     {
-                        var customerManager = context.HttpContext.RequestServices.GetRequiredService<CustomerManager>();
+                        var customerManager = context.HttpContext.RequestServices.GetRequiredService<ICustomerManager>();
                         var custoemrId = int.Parse(context.Principal.Identity.Name);
                         var user = customerManager.GetCustomer(custoemrId);
                         if (user == null)
@@ -95,10 +96,10 @@ namespace WebShopReact
             var factory = new DBContextFactory(Configuration);
             builder.Register<WebShopContext>(context => factory.CreateContext(ConnectionTypes.SqlServer)).Keyed<WebShopContext>(ConnectionTypes.SqlServer);
             builder.Register<WebShopContext>(context => factory.CreateContext(ConnectionTypes.InMemory)).Keyed<WebShopContext>(ConnectionTypes.InMemory);
-            builder.RegisterType<ShoppingCartManager>();
-            builder.RegisterType<CustomerManager>();
-            builder.RegisterType<ProductManager>();
-            builder.RegisterType<ConnectionManager>();
+            builder.RegisterType<ShoppingCartManager>().As<IShoppingCartManager>();
+            builder.RegisterType<CustomerManager>().As<ICustomerManager>();
+            builder.RegisterType<ProductManager>().As<IProductManager>();
+            builder.RegisterType<ConnectionManager>().As<IConnectionManager>();
             builder.RegisterType<ContextHelper>().As<IContextHelper>();
             builder.RegisterType<TokenHelper>().As<ITokenHelper>();
             builder.Populate(services);

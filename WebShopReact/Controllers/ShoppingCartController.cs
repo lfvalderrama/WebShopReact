@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using WebShopReact.Models;
-using WebShopReact.Managers;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using WebShopReact.Interfaces;
+using WebShopReact.Models;
 
 namespace WebShop.Controllers
 {
@@ -13,10 +13,10 @@ namespace WebShop.Controllers
     [Authorize]
     public class ShoppingCartController : Controller
     {
-        private readonly ShoppingCartManager _shoppingCartManager;
+        private readonly IShoppingCartManager _shoppingCartManager;
         private int _customer_id;
 
-        public ShoppingCartController(ShoppingCartManager shoppingCartManager)
+        public ShoppingCartController(IShoppingCartManager shoppingCartManager)
         {
             _shoppingCartManager = shoppingCartManager;
         }

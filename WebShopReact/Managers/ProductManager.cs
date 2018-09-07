@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using WebShopReact.Helpers;
+using WebShopReact.Interfaces;
 using WebShopReact.Models;
 
 namespace WebShopReact.Managers
 {
-    public class ProductManager
+    public class ProductManager : IProductManager
     {
         private readonly IContextHelper _contextHelper;
         private WebShopContext _context;
